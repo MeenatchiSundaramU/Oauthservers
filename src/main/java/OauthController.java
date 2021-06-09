@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class OauthController extends HttpServlet
            
            //When user create an account on mano accounts server this case will called
            case "/msaccounts/createAcc" :                    try {
-					                                        createAcc(req,resp);} catch (ClassNotFoundException | SQLException e) {
+					                                        createAcc(req,resp);} catch (ClassNotFoundException | SQLException | NoSuchAlgorithmException e) {
 					                                        e.printStackTrace();}
                                                             break;
            
@@ -43,7 +44,7 @@ public class OauthController extends HttpServlet
                                         
            case "/msaccounts/login" :                        try {
 					                                        LogVerified(req,resp);
-				                                            } catch (ClassNotFoundException | SQLException | IOException e) {
+				                                            } catch (ClassNotFoundException | SQLException | IOException | NoSuchAlgorithmException e) {
 					                                        e.printStackTrace();}
                                                             break;
              
@@ -64,7 +65,7 @@ public class OauthController extends HttpServlet
             //Endpoint for Code Exchange for accesstoken(Auth Flow) or Generating Access Token or Refresh Token for client flow,ropc flow
            case "/msoauth/token":                           try {
 				                                            issueAccRefToken(req,resp);
-			                                                } catch (ClassNotFoundException | SQLException | ParseException | IOException e) {
+			                                                } catch (ClassNotFoundException | SQLException | ParseException | IOException | NoSuchAlgorithmException e) {
 				                                            e.printStackTrace();}
                                                             break;
                                                             
@@ -180,7 +181,7 @@ public class OauthController extends HttpServlet
            
            //Participate Oauth Flows in this Fn---->Authorization code flow,Implicit flow
            //Create an new account and upload usersdetails to users table
-           void createAcc(HttpServletRequest req,HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException
+           void createAcc(HttpServletRequest req,HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException, NoSuchAlgorithmException
            {
         	   System.out.print("Insert createAcc");
         	   String refreshTokens="";
@@ -210,7 +211,7 @@ public class OauthController extends HttpServlet
            }
               
             //Login verifying
-           void LogVerified(HttpServletRequest req,HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException
+           void LogVerified(HttpServletRequest req,HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException, NoSuchAlgorithmException
            {
         	   //Check the login credentials and if users exists,it will returns the uid of that users.
         	   HttpSession session=req.getSession();
@@ -284,7 +285,7 @@ public class OauthController extends HttpServlet
            
            //Participate Oauth Flows in this Fn---->Authorization code flow,Implicit flow,ROPC flow
            //Resuablility function for Login Validity
-           public static int reuseLoginValidity(HttpServletRequest req,HttpServletResponse resp,ReuseLoginValidModel logModel) throws ClassNotFoundException, SQLException, IOException
+           public static int reuseLoginValidity(HttpServletRequest req,HttpServletResponse resp,ReuseLoginValidModel logModel) throws ClassNotFoundException, SQLException, IOException, NoSuchAlgorithmException
            {
         	   
         	   HttpSession session=req.getSession();
@@ -378,7 +379,7 @@ public class OauthController extends HttpServlet
           
         //Participate Oauth Flows in this Fn---->Implicit flow,Client Credential Flow,ROPC Flow
           //It is called when issued tokens response will depends on types of flow
-          public static void issueAccRefToken(HttpServletRequest req,HttpServletResponse resp) throws ClassNotFoundException, SQLException, ParseException, IOException
+          public static void issueAccRefToken(HttpServletRequest req,HttpServletResponse resp) throws ClassNotFoundException, SQLException, ParseException, IOException, NoSuchAlgorithmException
           {
         	  HttpSession session=req.getSession();
         	  

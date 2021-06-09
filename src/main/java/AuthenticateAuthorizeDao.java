@@ -1,3 +1,5 @@
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +14,7 @@ import java.util.Locale;
 public class AuthenticateAuthorizeDao 
 {
 	//Insert new users
-	public static void InsertUser(CreateAccModel creuser,String refreshTokens) throws ClassNotFoundException, SQLException
+	public static void InsertUser(CreateAccModel creuser,String refreshTokens) throws ClassNotFoundException, SQLException, NoSuchAlgorithmException
     {
 		//Database connect
    	 Connection conn=DatabaseConnect.connect();
@@ -20,7 +22,7 @@ public class AuthenticateAuthorizeDao
    	 st.setString(1,creuser.getName());
    	 st.setString(2,creuser.getEmail());
    	 st.setString(3,creuser.getPhone());
-   	 st.setString(4,creuser.getPassword());
+   	 st.setString(4,hashPass(creuser.getPassword()));
    	 st.setString(5, creuser.getLocation());
    	 
    	 //Insertion made into database
@@ -48,13 +50,13 @@ public class AuthenticateAuthorizeDao
 	 conn.close();
     }
 	       //Check the users credentials when logging the accounts
-		public static int checkUser(String email,String pass) throws ClassNotFoundException, SQLException
+		public static int checkUser(String email,String pass) throws ClassNotFoundException, SQLException, NoSuchAlgorithmException
 		{
 			 System.out.print("Entered Databse");
 			Connection conn=DatabaseConnect.connect();
 			PreparedStatement st=conn.prepareStatement("select uid from users where email=? and password=?");
 			st.setString(1, email);
-			st.setString(2, pass);
+			st.setString(2, hashPass(pass));
 			ResultSet rs=st.executeQuery();
 			if(rs.next()==false)
 			{
@@ -457,6 +459,22 @@ public class AuthenticateAuthorizeDao
 		    checktok.close();
 		    rscheck.close();
 		    conn.close();
+		}
+		
+		public static String hashPass(String password) throws NoSuchAlgorithmException
+		{
+			//There are many algos are available for hashing i)MD5(message digest) ii)SHA(Secured hash algo)
+			MessageDigest md=MessageDigest.getInstance("MD5");
+		    md.update(password.getBytes());
+		   
+		    byte[] hashedpass=md.digest();
+		    StringBuilder hashpass=new StringBuilder();
+		    for(byte b:hashedpass)
+		    {
+		    	//Convert to hexadecimal format
+		        hashpass.append(String.format("%02x",b));
+		    }
+		    return hashpass.toString();
 		}
 		}
 
